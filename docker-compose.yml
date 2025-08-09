@@ -3,6 +3,9 @@ services:
     build: misskey
     container_name: misskey
     restart: unless-stopped
+    networks:
+      - internal_network
+      - external_network
     depends_on:
       db:
         condition: service_healthy
@@ -20,6 +23,8 @@ services:
     restart: unless-stopped
     env_file:
       db.env
+    networks:
+      - internal_network
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     volumes:
       - ./db_data:/var/lib/postgresql/data
@@ -35,6 +40,8 @@ services:
     image: redis:7-alpine
     volumes:
       - ./redis_data:/data
+    networks:
+      - internal_network
     healthcheck:
       test: "redis-cli ping"
       interval: 5s
@@ -43,6 +50,8 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: misskey-cloudflared
+    networks:
+      - external_network
     restart: unless-stopped
     command: tunnel run
     env_file:
@@ -53,3 +62,8 @@ services:
 volumes:
   pg_socket:
   misskey_socket:
+
+networks:
+  internal_network:
+    internal: true
+  external_network:
