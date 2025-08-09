@@ -11,15 +11,11 @@ MisskeyをDocker Composeで簡単に構築・運用するためのサンプル�
 ## 初期セットアップ
 ### 必要ファイルのコピー（初回のみ）
 ```sh
-cp db.env.example db.env                # DB接続情報を編集
-cp cloudflare.env.example cloudflare.env # Cloudflare Tunnel情報を編集
-cp misskey-default.yml.example misskey-default.yml       # Misskey本体設定を編集
+cp db.env.example db.env
+cp cloudflare.env.example cloudflare.env
+cp misskey-default.yml.example misskey-default.yml
 ```
-
-### ボリュームディレクトリの作成
-```sh
-mkdir -p db_data files
-```
+細かいことは公式ドキュメントを見てください。
 
 ## 起動方法
 ```sh
