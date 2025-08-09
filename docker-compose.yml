@@ -13,7 +13,7 @@ services:
         condition: service_healthy
     volumes:
       - ./files:/misskey/files
-      - ./misskey-default.yml:/misskey/.config/default.yml
+      - ./misskey-default.yml:/misskey/.config/default.yml:ro
       - pg_socket:/var/run/postgresql
       - misskey_socket:/var/run/misskey
 
