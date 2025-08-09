@@ -1,0 +1,55 @@
+services:
+  misskey:
+    build: misskey
+    container_name: misskey
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./files:/misskey/files
+      - ./misskey-default.yml:/misskey/.config/default.yml
+      - pg_socket:/var/run/postgresql
+      - misskey_socket:/var/run/misskey
+
+  db:
+    image: postgres:15
+    container_name: misskey-db
+    restart: unless-stopped
+    env_file:
+      db.env
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+      - pg_socket:/var/run/postgresql
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    healthcheck:
+      test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
+      interval: 5s
+      retries: 20
+
+  redis:
+    restart: always
+    image: redis:7-alpine
+    volumes:
+      - ./redis_data:/data
+    healthcheck:
+      test: "redis-cli ping"
+      interval: 5s
+      retries: 20
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: misskey-cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    env_file:
+      - cloudflare.env
+    volumes:
+      - misskey_socket:/var/run/misskey
+
+volumes:
+  pg_socket:
+  misskey_socket:

@@ -1,0 +1,28 @@
+# Misskey Docker Compose .gitignore
+# DB and Redis persistent data
+/db_data/
+/redis_data/
+
+# Misskey uploaded files
+/files/
+
+# Environment files (if you want to keep secrets out of git)
+db.env
+cloudflare.env
+
+# Misskey config (if you want to keep local config out of git)
+/config/default.yml
+
+# Docker Compose override files
+/docker-compose.override.yml
+
+# Logs
+*.log
+
+# OS/Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
