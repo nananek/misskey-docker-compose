@@ -6,6 +6,8 @@
 # Misskey uploaded files
 /files/
 
+docker-compose.yml
+
 # Environment files (if you want to keep secrets out of git)
 db.env
 cloudflare.env

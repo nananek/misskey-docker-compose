@@ -11,6 +11,7 @@ MisskeyをDocker Composeで簡単に構築・運用するためのサンプル�
 ## 初期セットアップ
 ### 必要ファイルのコピー（初回のみ）
 ```sh
+cp docker-compose.yml.example docker-compose.yml
 cp db.env.example db.env
 cp cloudflare.env.example cloudflare.env
 cp misskey-default.yml.example misskey-default.yml
