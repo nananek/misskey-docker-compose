@@ -15,6 +15,7 @@ cp docker-compose.yml.example docker-compose.yml
 cp db.env.example db.env
 cp cloudflare.env.example cloudflare.env
 cp misskey-default.yml.example misskey-default.yml
+sudo chown 991:991 volumes/misskey-files
 ```
 細かいことは公式ドキュメントを見てください。
 
