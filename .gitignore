@@ -2,9 +2,8 @@
 # DB and Redis persistent data
 /db_data/
 /redis_data/
-
-# Misskey uploaded files
 /files/
+/volumes/
 
 docker-compose.yml
 
