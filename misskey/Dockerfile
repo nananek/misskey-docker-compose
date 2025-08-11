@@ -1,4 +1,4 @@
-FROM misskey/misskey:latest
+FROM misskey/misskey:2025.7.0
 
 USER root
 

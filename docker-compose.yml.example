@@ -25,10 +25,8 @@ services:
       db.env
     networks:
       - internal_network
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     volumes:
       - ./volumes/postgresql-data:/var/lib/postgresql/data
-      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - pg_socket:/var/run/postgresql
     healthcheck:
       test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
