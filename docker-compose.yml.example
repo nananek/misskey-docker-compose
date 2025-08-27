@@ -45,17 +45,40 @@ services:
       interval: 5s
       retries: 20
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: misskey-cloudflared
-    networks:
-      - external_network
-    restart: unless-stopped
-    command: tunnel run
-    env_file:
-      - cloudflare.env
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./volumes/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./volumes/certbot/conf:/etc/letsencrypt:ro
+      - ./volumes/certbot/www:/var/www/certbot:ro
       - misskey_socket:/var/run/misskey
+    networks:
+      - external_network2
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./volumes/certbot/conf:/etc/letsencrypt
+      - ./volumes/certbot/www:/var/www/certbot
+    entrypoint: "sleep infinity"
+    networks:
+      - external_network2
+
+  #cloudflared:
+  #  image: cloudflare/cloudflared:latest
+  #  container_name: misskey-cloudflared
+  #  networks:
+  #    - external_network
+  #  restart: unless-stopped
+  #  command: tunnel run
+  #  env_file:
+  #    - cloudflare.env
+  #  volumes:
+  #    - misskey_socket:/var/run/misskey
 
 volumes:
   pg_socket:
@@ -65,3 +88,4 @@ networks:
   internal_network:
     internal: true
   external_network:
+  external_network2:
