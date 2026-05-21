@@ -33,17 +33,52 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey
           tags: |
-            type=raw,value=latest
             type=schedule,pattern={{date 'YYYY-MM-DD'}}
             type=sha,prefix=sha-
 
-      - uses: docker/build-push-action@v6
+      - name: Build and push (SHA tag)
+        uses: docker/build-push-action@v6
         with:
           context: misskey
           file: misskey/Dockerfile
           pull: true
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Verify image
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          echo "==> CMD contents"
+          CMD=$(docker inspect --format='{{json .Config.Cmd}}' $IMAGE)
+          echo "$CMD"
+
+          echo "==> CMD must not reference pnpm"
+          if echo "$CMD" | grep -q '"pnpm"'; then
+            echo "ERROR: CMD references pnpm which is not available in the image"
+            exit 1
+          fi
+
+          echo "==> Container startup (exit 127 = binary not found)"
+          timeout 10 docker run --rm $IMAGE || EXIT=$?
+          if [ "${EXIT:-0}" = "127" ]; then
+            echo "ERROR: CMD binary not found (exit 127)"
+            exit 1
+          fi
+          echo "OK: exit ${EXIT:-0} (expected: DB/config not available)"
+
+      - name: Push final tags
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:latest \
+            ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:${{ github.sha }}
+          for TAG in ${{ steps.meta.outputs.tags }}; do
+            docker buildx imagetools create \
+              --tag "$TAG" \
+              ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:${{ github.sha }}
+          done
