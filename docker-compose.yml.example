@@ -15,7 +15,7 @@ services:
       - ./volumes/misskey-files:/misskey/files
       - ./misskey-default.yml:/misskey/.config/default.yml:ro
       - pg_socket:/var/run/postgresql
-      - misskey_socket:/var/run/misskey
+      - ./volumes/misskey-socket:/var/run/misskey
 
   db:
     image: postgres:15
@@ -55,7 +55,7 @@ services:
       - ./volumes/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./volumes/certbot/conf:/etc/letsencrypt:ro
       - ./volumes/certbot/www:/var/www/certbot:ro
-      - misskey_socket:/var/run/misskey
+      - ./volumes/misskey-socket:/var/run/misskey
     networks:
       - external_network2
 
@@ -78,11 +78,10 @@ services:
   #  env_file:
   #    - cloudflare.env
   #  volumes:
-  #    - misskey_socket:/var/run/misskey
+  #    - ./volumes/misskey-socket:/var/run/misskey
 
 volumes:
   pg_socket:
-  misskey_socket:
 
 networks:
   internal_network:
