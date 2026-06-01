@@ -43,6 +43,7 @@ jobs:
           file: misskey/Dockerfile
           pull: true
           push: true
+          load: true
           tags: ghcr.io/${{ github.repository_owner }}/mk-nekonomisskey:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
